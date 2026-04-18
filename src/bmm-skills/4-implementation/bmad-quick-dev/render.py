@@ -18,7 +18,8 @@ import sys
 
 
 def find_project_root():
-    """Walk up from cwd until a _bmad/ directory is found. Exit non-zero otherwise."""
+    """Walk up from cwd until a _bmad/ directory is found. On failure, print a
+    HALT instruction to stdout and exit non-zero."""
     current = os.path.abspath(os.getcwd())
     while True:
         candidate = os.path.join(current, "_bmad")
@@ -27,8 +28,7 @@ def find_project_root():
         parent = os.path.dirname(current)
         if parent == current:
             print(
-                f"render.py: no _bmad/ directory found walking up from {os.getcwd()}",
-                file=sys.stderr,
+                f"HALT and report to the user: no _bmad/ directory found walking up from {os.getcwd()}"
             )
             sys.exit(1)
         current = parent
@@ -119,7 +119,9 @@ def main():
             fh.write(render_template(content, vars_))
         count += 1
 
-    print(f"render.py: rendered {count} files -> {out_dir}")
+    print(f"render.py: rendered {count} files -> {out_dir}", file=sys.stderr)
+    workflow_md = os.path.join(out_dir, "workflow.md")
+    print(f"read and follow {workflow_md}")
 
 
 if __name__ == "__main__":
